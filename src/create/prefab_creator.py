@@ -4,6 +4,7 @@ import pygame
 import esper
 
 from src.ecs.components.c_animation import CAnimation
+from src.ecs.components.c_enemy_hunter_state import CEnemyHunterState
 from src.ecs.components.c_enemy_spawner import CEnemySpawner
 from src.ecs.components.c_input_command import CInputCommand
 from src.ecs.components.c_player_state import CPlayerState
@@ -11,6 +12,7 @@ from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
+from src.ecs.components.tags.c_tag_explosion import CTagExplosion
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
 
@@ -38,14 +40,42 @@ def create_sprite(world:esper.World, pos:pygame.Vector2, vel:pygame.Vector2, sur
     return sprite_entity
 
 def create_enemy_square(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
-    if enemy_info["image"] != 'assets/img/enemy.png':
+    if enemy_info["image"] == 'assets/img/enemy.png':
+        # Create Hunter enemy
+        enemy_surface = pygame.image.load(enemy_info["image"]).convert_alpha()
+        
+        # Calculate the width of a single frame
+        frame_width = enemy_surface.get_width() / enemy_info["animations"]["number_frames"]
+        frame_height = enemy_surface.get_height()
+        
+        # Adjust position to center the enemy
+        adjusted_pos = pygame.Vector2(
+            pos.x - frame_width / 2,
+            pos.y - frame_height / 2
+        )
+        
+        enemy_entity = create_sprite(world, adjusted_pos, pygame.Vector2(0, 0), enemy_surface)
+        
+        
+        world.add_component(enemy_entity, CTagEnemy())
+        world.add_component(enemy_entity, CAnimation(enemy_info["animations"]))
+        world.add_component(enemy_entity, 
+                            CEnemyHunterState(
+                                pos,
+                                enemy_info["distance_start_chase"],
+                                enemy_info["distance_start_return"],
+                                enemy_info["velocity_chase"],
+                                enemy_info["velocity_return"]
+                            ))
+    else:
+        # Create regular enemy (asteroid)
         enemy_surface = pygame.image.load(enemy_info["image"]).convert_alpha()
         
         vel_max = enemy_info["velocity_max"]
         vel_min = enemy_info["velocity_min"]
         vel_range = random.randrange(vel_min, vel_max)
         velocity = pygame.Vector2(random.choice([-vel_range, vel_range]),
-                                random.choice([-vel_range, vel_range]))
+                              random.choice([-vel_range, vel_range]))
         enemy_entity = create_sprite(world, pos, velocity, enemy_surface)
         world.add_component(enemy_entity, CTagEnemy())
 
@@ -113,3 +143,14 @@ def create_bullet(world: esper.World,
 
     bullet_entity = create_sprite(world,pos, vel, bullet_surface)
     world.add_component(bullet_entity, CTagBullet())
+    
+def create_explosion(world: esper.World, pos: pygame.Vector2, explosion_cfg: dict):
+    explosion_surface = pygame.image.load(explosion_cfg["image"]).convert_alpha()
+    explosion_entity = create_sprite(world, pos, pygame.Vector2(0, 0), explosion_surface)
+    world.add_component(explosion_entity, CAnimation(explosion_cfg["animations"]))
+    world.add_component(explosion_entity, CTagExplosion())
+    # Start the explosion animation
+    c_anim = world.component_for_entity(explosion_entity, CAnimation)
+    c_anim.curr_frame = c_anim.animations_list[0].start
+    c_anim.curr_anim_time = 0
+    return explosion_entity

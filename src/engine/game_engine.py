@@ -6,7 +6,9 @@ from src.ecs.systems.s_animation import system_animation
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_collision_enemy_bullet import system_collision_enemy_bullet
 
+from src.ecs.systems.s_enemy_hunter import system_enemy_hunter
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
+from src.ecs.systems.s_explosion_animation import system_explosion_animation
 from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_input import system_input
 from src.ecs.systems.s_player_state import system_player_state
@@ -114,6 +116,11 @@ class GameEngine:
         system_enemy_spawner(self.ecs_world, self.enemies_cfg, self.delta_time)
         system_movement(self.ecs_world, self.delta_time)
         
+        player_pos = self._player_c_t.pos.copy()
+        player_pos.x += self._player_c_s.area.width / 2
+        player_pos.y += self._player_c_s.area.height / 2
+        system_enemy_hunter(self.ecs_world, player_pos, self.delta_time)
+        
         system_player_state(self.ecs_world)
 
         system_screen_bounce(self.ecs_world, self.screen)
@@ -122,12 +129,13 @@ class GameEngine:
         )
         system_screen_bullet(self.ecs_world, self.screen)
 
-        system_collision_enemy_bullet(self.ecs_world)
+        system_collision_enemy_bullet(self.ecs_world, self.explosion_cfg)
         system_collision_player_enemy(
-            self.ecs_world, self._player_entity, self.level_01_cfg
+            self.ecs_world, self._player_entity, self.level_01_cfg, self.explosion_cfg
         )
         
         system_animation(self.ecs_world, self.delta_time)
+        system_explosion_animation(self.ecs_world)
 
         self.ecs_world._clear_dead_entities()
         self.num_bullets = len(self.ecs_world.get_component(CTagBullet))
