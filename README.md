@@ -1,4 +1,3 @@
-# POSIBLE SOLUCIÓN EJERCICIO - SEMANA 02
+# Taller 3
 
-Esta plantilla contiene una posible solución de la semana 2 del cursoe
-"Introducción al desarrollo de videojuegos con ECS"
+Este proyecto es la continuación del taller 2, en donde le añadimos sprites al jugador, a los enemigos y a las balas. Añadido a esto, le agregamos un sistema muy basico de inteligenica a los enemigos utilizando un sistema de automatas finitos.
