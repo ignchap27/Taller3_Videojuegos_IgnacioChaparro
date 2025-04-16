@@ -25,7 +25,7 @@ def system_screen_player(world: esper.World, velocity:float, screen: pygame.Surf
         c_v.vel.x = dir_x * velocity
         c_v.vel.y = dir_y * velocity
 
-        player_rect = c_s.surf.get_rect(topleft=c_t.pos)
+        player_rect = CSurface.get_area_relative(c_s.area, c_t.pos)
         if not screen_rect.contains(player_rect):
             player_rect.clamp_ip(screen_rect)
             c_t.pos.xy = player_rect.topleft
