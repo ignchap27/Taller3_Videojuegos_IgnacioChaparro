@@ -1,3 +1,7 @@
-# Taller 3
+# Proyecto Talleres
 
-Este proyecto es la continuación del taller 2, en donde le añadimos sprites al jugador, a los enemigos y a las balas. Añadido a esto, le agregamos un sistema muy basico de inteligenica a los enemigos utilizando un sistema de automatas finitos.
+![alt text](cover_image.png)
+
+Este proyecto es la version final de los ejercicios de taller, donde en la personalización se implemento el requerimiento 6: "Se esperan instrucciones de input muy simples en forma de texto en la pantalla". 
+
+El proyecto está publicado en itch.io en el siguente link:  https://ichaparro.itch.io/destroy-it 
