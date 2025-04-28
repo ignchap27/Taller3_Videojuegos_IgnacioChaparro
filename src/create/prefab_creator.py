@@ -15,6 +15,7 @@ from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.tags.c_tag_explosion import CTagExplosion
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
+from src.engine.service_locator import ServiceLocator
 
 
 def create_square(world: esper.World, size: pygame.Vector2,
@@ -42,8 +43,7 @@ def create_sprite(world:esper.World, pos:pygame.Vector2, vel:pygame.Vector2, sur
 def create_enemy_square(world: esper.World, pos: pygame.Vector2, enemy_info: dict):
     if enemy_info["image"] == 'assets/img/enemy.png':
         # Create Hunter enemy
-        enemy_surface = pygame.image.load(enemy_info["image"]).convert_alpha()
-        
+        enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
         # Calculate the width of a single frame
         frame_width = enemy_surface.get_width() / enemy_info["animations"]["number_frames"]
         frame_height = enemy_surface.get_height()
@@ -69,8 +69,8 @@ def create_enemy_square(world: esper.World, pos: pygame.Vector2, enemy_info: dic
                             ))
     else:
         # Create regular enemy (asteroid)
-        enemy_surface = pygame.image.load(enemy_info["image"]).convert_alpha()
-        
+        enemy_surface = ServiceLocator.images_service.get(enemy_info["image"])
+        ServiceLocator.sounds_service.play(enemy_info["sound"])
         vel_max = enemy_info["velocity_max"]
         vel_min = enemy_info["velocity_min"]
         vel_range = random.randrange(vel_min, vel_max)
@@ -82,7 +82,7 @@ def create_enemy_square(world: esper.World, pos: pygame.Vector2, enemy_info: dic
 
 def create_player_square(world: esper.World, player_info: dict, player_lvl_info: dict) -> int:
     
-    player_sprite = pygame.image.load(player_info["image"]).convert_alpha()
+    player_sprite = ServiceLocator.images_service.get(player_info["image"])
     size = player_sprite.get_size()
     size = (size[0] / player_info["animations"]["number_frames"], size[1])
     pos = pygame.Vector2(player_lvl_info["position"]["x"] - (size[0] / 2),
@@ -131,7 +131,7 @@ def create_bullet(world: esper.World,
                   player_size: pygame.Vector2,
                   bullet_info: dict):
     
-    bullet_surface = pygame.image.load(bullet_info["image"]).convert_alpha()
+    bullet_surface = ServiceLocator.images_service.get(bullet_info["image"])
     bullet_size = bullet_surface.get_rect().size
 
     pos = pygame.Vector2((player_pos.x + player_size[0] / 2) - (bullet_size[0] / 2), 
@@ -142,13 +142,15 @@ def create_bullet(world: esper.World,
     vel = direccion * bullet_info["velocity"]
 
     bullet_entity = create_sprite(world,pos, vel, bullet_surface)
+    ServiceLocator.sounds_service.play(bullet_info["sound"])
     world.add_component(bullet_entity, CTagBullet())
     
 def create_explosion(world: esper.World, pos: pygame.Vector2, explosion_cfg: dict):
-    explosion_surface = pygame.image.load(explosion_cfg["image"]).convert_alpha()
+    explosion_surface = ServiceLocator.images_service.get(explosion_cfg["image"])
     explosion_entity = create_sprite(world, pos, pygame.Vector2(0, 0), explosion_surface)
     world.add_component(explosion_entity, CAnimation(explosion_cfg["animations"]))
     world.add_component(explosion_entity, CTagExplosion())
+    ServiceLocator.sounds_service.play(explosion_cfg["sound"])
     # Start the explosion animation
     c_anim = world.component_for_entity(explosion_entity, CAnimation)
     c_anim.curr_frame = c_anim.animations_list[0].start

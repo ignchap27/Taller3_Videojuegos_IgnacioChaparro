@@ -119,7 +119,7 @@ class GameEngine:
         player_pos = self._player_c_t.pos.copy()
         player_pos.x += self._player_c_s.area.width / 2
         player_pos.y += self._player_c_s.area.height / 2
-        system_enemy_hunter(self.ecs_world, player_pos, self.delta_time)
+        system_enemy_hunter(self.ecs_world, player_pos, self.delta_time, self.enemies_cfg["Hunter"])
         
         system_player_state(self.ecs_world)
 

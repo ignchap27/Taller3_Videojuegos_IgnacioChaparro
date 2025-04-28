@@ -5,8 +5,9 @@ from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
 from src.ecs.components.c_animation import CAnimation
+from src.engine.service_locator import ServiceLocator
 
-def system_enemy_hunter(world: esper.World, player_pos: pygame.Vector2, delta_time: float):
+def system_enemy_hunter(world: esper.World, player_pos: pygame.Vector2, delta_time: float, hunter_info:dict):
     components = world.get_components(CEnemyHunterState, CTransform, CVelocity, CAnimation, CSurface)
     
     for _, (c_state, c_trans, c_vel, c_anim, c_surf) in components:
@@ -25,6 +26,7 @@ def system_enemy_hunter(world: esper.World, player_pos: pygame.Vector2, delta_ti
         # State transitions
         if c_state.state == EnemyState.IDLE:
             if distance_to_player <= c_state.chase_distance:
+                ServiceLocator.sounds_service.play(hunter_info["sound_chase"])
                 c_state.state = EnemyState.CHASE
                 _set_animation(c_anim, 0)  # MOVE animation
         elif c_state.state == EnemyState.CHASE:
