@@ -47,6 +47,7 @@ class GameEngine:
 
         self.clock = pygame.time.Clock()
         self.is_running = False
+        self.is_paused = False 
         self.framerate = self.window_cfg["framerate"]
         self.delta_time = 0
         self.bg_color = pygame.Color(
@@ -116,6 +117,8 @@ class GameEngine:
                 self.is_running = False
 
     def _update(self):
+        if self.is_paused:
+            return
         system_enemy_spawner(self.ecs_world, self.enemies_cfg, self.delta_time)
         system_movement(self.ecs_world, self.delta_time)
         
@@ -145,8 +148,14 @@ class GameEngine:
 
     def _draw(self):
         self.screen.fill(self.bg_color)
-        system_text_rendering(self.screen, self.level_01_cfg)
         system_rendering(self.ecs_world, self.screen)
+        
+        if self.is_paused:
+            overlay = pygame.Surface(self.screen.get_size(), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 128))  # Negro semitransparente
+            self.screen.blit(overlay, (0, 0))
+        
+        system_text_rendering(self.screen, self.level_01_cfg, self.is_paused)
         pygame.display.flip()
 
     def _clean(self):
@@ -162,6 +171,8 @@ class GameEngine:
             self._player_tag.up = c_input.phase == CommandPhase.START
         if c_input.name == "PLAYER_DOWN":
             self._player_tag.down = c_input.phase == CommandPhase.START
+        if c_input.name == "PAUSE_GAME" and c_input.phase == CommandPhase.START:
+            self.is_paused = not self.is_paused
 
         if (
             c_input.name == "PLAYER_FIRE"

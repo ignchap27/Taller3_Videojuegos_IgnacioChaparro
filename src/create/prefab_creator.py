@@ -123,7 +123,10 @@ def create_input_player(world: esper.World):
     input_fire = world.create_entity()
     world.add_component(input_fire,
                         CInputCommand("PLAYER_FIRE", [pygame.BUTTON_LEFT]))
-
+    
+    input_pause = world.create_entity()
+    world.add_component(input_pause,
+                        CInputCommand("PAUSE_GAME", [pygame.K_p]))
 
 def create_bullet(world: esper.World,
                   mouse_pos: pygame.Vector2,

@@ -8,6 +8,7 @@
     },
     "sound_collision": "assets/snd/collision.ogg",
     "title": "Destroy Everything! - Level 01",
+    "paused": "Wow Bro Take a Break, You're Destroying Level 01",
     "instructions": "Use the arrows for moving, right click for shooting and key P for pausing the game",
     "enemy_spawn_events": [
         {
