@@ -7,6 +7,8 @@
         "max_bullets": 4
     },
     "sound_collision": "assets/snd/collision.ogg",
+    "title": "Destroy Everything! - Level 01",
+    "instructions": "Use the arrows for moving, right click for shooting and key P for pausing the game",
     "enemy_spawn_events": [
         {
             "time": 0.0,

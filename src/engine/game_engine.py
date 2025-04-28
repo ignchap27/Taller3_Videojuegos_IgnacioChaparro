@@ -32,6 +32,7 @@ from src.create.prefab_creator import (
     create_player_square,
     create_bullet,
 )
+from src.ecs.systems.s_text_rendering import system_text_rendering
 
 
 class GameEngine:
@@ -144,6 +145,7 @@ class GameEngine:
 
     def _draw(self):
         self.screen.fill(self.bg_color)
+        system_text_rendering(self.screen, self.level_01_cfg)
         system_rendering(self.ecs_world, self.screen)
         pygame.display.flip()
 
