@@ -6,6 +6,7 @@
         },
         "max_bullets": 4
     },
+    "sound_collision": "assets/snd/collision.ogg",
     "enemy_spawn_events": [
         {
             "time": 0.0,

@@ -1,3 +1,4 @@
+import asyncio
 import json
 import pygame
 import esper
@@ -70,7 +71,7 @@ class GameEngine:
         with open("assets/cfg/explosion.json", encoding="utf-8") as explosion_file:
             self.explosion_cfg = json.load(explosion_file)
 
-    def run(self) -> None:
+    async def run(self) -> None:
         self._create()
         self.is_running = True
         while self.is_running:
@@ -78,6 +79,7 @@ class GameEngine:
             self._process_events()
             self._update()
             self._draw()
+            await asyncio.sleep(0)
         self._clean()
 
     def _create(self):
@@ -121,9 +123,9 @@ class GameEngine:
         player_pos.y += self._player_c_s.area.height / 2
         system_enemy_hunter(self.ecs_world, player_pos, self.delta_time, self.enemies_cfg["Hunter"])
         
-        system_player_state(self.ecs_world)
+        system_player_state(self.ecs_world, self.player_cfg)
 
-        system_screen_bounce(self.ecs_world, self.screen)
+        system_screen_bounce(self.ecs_world, self.screen, self.level_01_cfg)
         system_screen_player(
             self.ecs_world, self.player_cfg["input_velocity"], self.screen
         )
